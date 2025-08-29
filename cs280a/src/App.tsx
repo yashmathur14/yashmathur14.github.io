@@ -13,16 +13,16 @@ function App() {
             <div className="flex justify-between items-center h-16">
               <h1 className="text-2xl font-bold text-gray-900">Yash Mathur</h1>
               <div className="flex space-x-8">
-                <a href="/cs280a/home" className="text-gray-700 hover:text-blue-600 text-lg">Home</a>
-                <a href="/cs280a/project0" className="text-gray-700 hover:text-blue-600 text-lg">Project 0</a>
+                <a href="/" className="text-gray-700 hover:text-blue-600 text-lg">Home</a>
+                <a href="/project0" className="text-gray-700 hover:text-blue-600 text-lg">Project 0</a>
               </div>
             </div>
           </div>
         </nav>
 
         <Routes>
-          <Route path="/cs280a/home" element={<Home />} />
-          <Route path="/cs280a/project0" element={<Project0 />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/project0" element={<Project0 />} />
         </Routes>
       </div>
     </Router>

@@ -16,7 +16,7 @@ function Home() {
           This page does not contain any code I have written to complete projects or assignments, and is simply a showcase of my work in exploring computer vision and computational photography.
         </p>
         <Link 
-          to="/cs280a/project0" 
+          to="/project0" 
           className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-12 rounded-lg text-xl transition-colors"
         >
           View Project 0

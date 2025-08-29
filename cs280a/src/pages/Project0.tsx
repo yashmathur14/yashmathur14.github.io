@@ -21,7 +21,7 @@ function Project0() {
             Project & Submission Overview
           </h2>
           <div className="prose prose-lg max-w-none">
-              <a href="https://cal-cs280.github.io/fa25/hw/proj0/index.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
+              <a href="https://cal-cs180.github.io/fa25/hw/proj0/index.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
                 Official CS280A Project 0 page
               </a>
           </div>
@@ -102,7 +102,7 @@ function Project0() {
       {/* Navigation Back to Portfolio */}
       <div className="text-center">
         <Link 
-          to="/cs280a/home" 
+          to="/" 
           className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors"
         >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
