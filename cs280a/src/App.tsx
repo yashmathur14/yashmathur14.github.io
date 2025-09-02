@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Home from './pages/Home'
 import Project0 from './pages/Project0'
 
@@ -13,8 +13,8 @@ function App() {
             <div className="flex justify-between items-center h-16">
               <h1 className="text-2xl font-bold text-gray-900">Yash Mathur</h1>
               <div className="flex space-x-8">
-                <a href="/" className="text-gray-700 hover:text-blue-600 text-lg">Home</a>
-                <a href="/project0" className="text-gray-700 hover:text-blue-600 text-lg">Project 0</a>
+                <Link to="/" className="text-gray-700 hover:text-blue-600 text-lg">Home</Link>
+                <Link to="/project0" className="text-gray-700 hover:text-blue-600 text-lg">Project 0</Link>
               </div>
             </div>
           </div>
