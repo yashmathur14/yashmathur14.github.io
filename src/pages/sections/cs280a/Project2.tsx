@@ -479,8 +479,8 @@ partial_y = convolve2d(img_gray, Dy, mode='same', boundary='symm')`}
               <li>Combine them: <InlineMath math="I_{hybrid} = I_{low} + I_{high}" /></li>
             </ol>
             <p className="text-lg text-left text-gray-700 mb-6">
-              I created 2-3 hybrid images including Derek + Nutmeg and other creative combinations. 
-              For one result, I performed frequency analysis showing the log magnitude of Fourier transforms.
+              I created 2 hybrid images including Derek + Nutmeg and Cole Palmer + Didier Drogba. 
+              For the latter, I performed frequency analysis showing the log magnitude of Fourier transforms.
             </p>
           </div>
           
