@@ -59,6 +59,19 @@ function CS280AHome() {
             View Project
           </Link>
         </div>
+
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow">
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">Project 2</h3>
+          <p className="text-gray-600 mb-6">
+            Fun with Filters and Frequencies: Image Processing with Convolutions and Frequency Domain Analysis
+          </p>
+          <Link 
+            to="/cs280a/project2" 
+            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+          >
+            View Project
+          </Link>
+        </div>
       </div>
 
       {/* Navigation Back to Main Portfolio */}

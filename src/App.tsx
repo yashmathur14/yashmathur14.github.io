@@ -4,6 +4,7 @@ import Home from './pages/Home.tsx'
 import CS280AHome from './pages/sections/cs280a/Home.tsx'
 import Project0 from './pages/sections/cs280a/Project0.tsx'
 import Project1 from './pages/sections/cs280a/Project1.tsx'
+import Project2 from './pages/sections/cs280a/Project2.tsx'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
                       <Link to="/cs280a" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Portfolio Home</Link>
                       <Link to="/cs280a/project0" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Project 0</Link>
                       <Link to="/cs280a/project1" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Project 1</Link>
+                      <Link to="/cs280a/project2" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Project 2</Link>
                     </div>
                   </div>
                 </div>
@@ -36,6 +38,7 @@ function App() {
           <Route path="/cs280a" element={<CS280AHome />} />
           <Route path="/cs280a/project0" element={<Project0 />} />
           <Route path="/cs280a/project1" element={<Project1 />} />
+          <Route path="/cs280a/project2" element={<Project2 />} />
         </Routes>
       </div>
     </Router>
