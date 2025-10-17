@@ -5,7 +5,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 // Import project images
-import { testRectification1, testRectification2, testRectification3, pointCorrespondences1, pointCorrespondences2, hellerPatio1, hellerPatio2, hellerPatio3, cathedral1, cathedral2, cathedral3, fountain1, fountain2, fountain3, finalMosaic1, finalMosaic2, finalMosaic3, cylindricalMosaic } from '../../../assets/cs280a/proj3'
+import { testRectification1, testRectification2, testRectification3, pointCorrespondences1, pointCorrespondences2, hellerPatio1, hellerPatio2, hellerPatio3, cathedral1, cathedral2, cathedral3, fountain1, fountain2, fountain3, finalMosaic1, finalMosaic2, finalMosaic3, cylindricalMosaic, harrisCornersComparison1, harrisCornersComparison2, harrisCornersComparison3, descriptorExamplesPreview, descriptorExamplesMain, descriptorExamplesDetails, featureMatches1, featureMatches2, featureMatches3, automaticMosaicHeller, automaticMosaicCathedral, automaticMosaicGreatHall } from '../../../assets/cs280a/proj3'
 
 function Project3() {
   return (
@@ -15,8 +15,11 @@ function Project3() {
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
           Project 3: Image Warping and Mosaicing
         </h1>
-        <h2 className="text-2xl md:text-3xl text-gray-700 mb-6">
+        <h2 className="text-2xl md:text-3xl text-gray-700 mb-2">
           Part A: Image Registration and Mosaicing
+        </h2>
+        <h2 className="text-2xl md:text-3xl text-gray-700 mb-6">
+          Part B: Feature Matching for Autostitching
         </h2>
         <p className="text-lg text-gray-600 mb-8">
           CS280A: Intro to Computer Vision and Computational Photography
@@ -59,10 +62,14 @@ function Project3() {
               </ul>
             </div>
             <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">Part B: Coming Soon!</h3>
-              <p className="text-gray-600 text-left">
-                Part B will be implemented in the next phase of this project. 
-              </p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">Part B: Feature Matching for Autostitching</h3>
+              <ul className="text-gray-700 space-y-2 text-left">
+                <li><strong>B.1:</strong> Harris Corner Detection & ANMS (20 pts)</li>
+                <li><strong>B.2:</strong> Feature Descriptor Extraction (20 pts)</li>
+                <li><strong>B.3:</strong> Feature Matching (20 pts)</li>
+                <li><strong>B.4:</strong> RANSAC for Robust Homography (40 pts)</li>
+                <li><strong>B.5:</strong> Rotation-Invariant Descriptors</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -625,17 +632,345 @@ Quality: Moderate`}
         </div>
       </div>
 
-      {/* Coming Soon Section */}
+      {/* Visual Divider */}
       <div className="mb-16">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Part B: Coming Soon</h2>
+        <div className="max-w-6xl mx-auto">
+          <div className="h-1 bg-gradient-to-r from-transparent via-gray-400 to-transparent mb-8"></div>
+          <div className="text-center">
+            <h2 className="text-4xl font-bold text-gray-900 mb-8">Part B: Feature Matching for Autostitching</h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Part B.1: Harris Corner Detection */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Part B.1: Harris Corner Detection & ANMS</h2>
         <div className="max-w-6xl mx-auto mb-8">
-          <div className="bg-gray-100 rounded-lg p-8 text-center">
-            <h3 className="text-2xl font-semibold text-gray-700 mb-4">Part B Implementation</h3>
-            <p className="text-lg text-gray-600 mb-4">
-              Part B of Project 3 will be implemented in the next phase. This section will include 
-              more advanced mosaicing techniques and applications.
+          <p className="text-lg text-gray-700 text-left mb-6">
+            I implemented the Harris corner detection using the <code>corner_harris</code> function from scikit-image 
+            with the 'eps' method and sigma=1. The implementation includes edge discarding (20 pixels) to avoid 
+            corners near image boundaries, ensuring robust feature detection.
+          </p>
+
+          <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">Adaptive Non-Maximal Suppression (ANMS)</h3>
+          <p className="text-lg text-gray-700 text-left mb-6">
+            The ANMS algorithm is implemented to select the most distinctive corners by calculating suppression radii 
+            for each corner. A corner is kept only if it's significantly stronger than nearby corners (using a 
+            robustness constant <code>c_robust=0.9</code>) and has sufficient distance from other strong corners 
+            (minimum radius threshold of 5.0 pixels). The algorithm selects the top corners with the largest 
+            suppression radii, effectively reducing corner density while preserving the most distinctive features.
+          </p>
+          <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">Harris Corners Detection & ANMS Comparison</h3>
+          <p className="text-lg text-gray-700 text-left mb-6">
+            The following visualizations show the Harris corner detection results with and without 
+            Adaptive Non-Maximal Suppression (ANMS). Each image pair demonstrates how ANMS selects 
+            the most distinctive corners by ensuring they are well-distributed across the image, 
+            suppressing weaker corners that are too close to stronger ones.
+          </p>
+          
+          <div className="space-y-8 max-w-6xl mx-auto mb-8">
+            <div className="text-center">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Harris Corners Comparison 1</h4>
+              <img 
+                src={harrisCornersComparison1} 
+                alt="Harris Corners Comparison 1" 
+                className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+              />
+              <p className="text-sm text-gray-600">Left: Harris corners without ANMS | Right: Harris corners with ANMS</p>
+            </div>
+            
+            <div className="text-center">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Harris Corners Comparison 2</h4>
+              <img 
+                src={harrisCornersComparison2} 
+                alt="Harris Corners Comparison 2" 
+                className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+              />
+              <p className="text-sm text-gray-600">Left: Harris corners without ANMS | Right: Harris corners with ANMS</p>
+            </div>
+            
+            <div className="text-center">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Harris Corners Comparison 3</h4>
+              <img 
+                src={harrisCornersComparison3} 
+                alt="Harris Corners Comparison 3" 
+                className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+              />
+              <p className="text-sm text-gray-600">Left: Harris corners without ANMS | Right: Harris corners with ANMS</p>
+            </div>
+          </div>
+
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+            <p className="text-gray-700 text-left">
+              <strong>Deliverables:</strong> Show detected corners overlaid on image, with and without ANMS.
             </p>
-            <div className="text-4xl text-gray-400">🚧</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Part B.2: Feature Descriptor Extraction */}
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Part B.2: Feature Descriptor Extraction</h2>
+            <div className="max-w-6xl mx-auto mb-8">
+              <p className="text-lg text-gray-700 text-left mb-6">
+                I implemented feature descriptor extraction that creates axis-aligned 8x8 descriptors from 40x40 windows 
+                centered at ANMS corners. This technique provides a good balance between local detail and robustness 
+                to small geometric transformations.
+              </p>
+
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">Implementation Details</h3>
+              <p className="text-lg text-gray-700 text-left mb-4">
+                The extraction process involves applying a Gaussian blur to the 40x40 window using a kernel size of 7 with 
+                sigma=1.0, followed by downsampling to 8x8 using <code>cv2.INTER_AREA</code> interpolation. This 
+                preprocessing step helps reduce noise and aliasing artifacts in the final descriptors.
+              </p>
+
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">Normalization Process</h3>
+              <p className="text-lg text-gray-700 text-left mb-4">
+                Each descriptor undergoes bias/gain normalization by subtracting the mean and dividing by the 
+                standard deviation, with a small epsilon (1e-8) to prevent division by zero. This normalization 
+                ensures descriptors are robust to lighting variations and maintains consistent scale across 
+                different image regions.
+              </p>
+          <div className="space-y-8 max-w-6xl mx-auto mb-8">
+            <div className="text-center">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Feature Descriptor Extraction Overview</h4>
+              <img 
+                src={descriptorExamplesPreview} 
+                alt="Feature Descriptors Preview" 
+                className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+              />
+              <p className="text-sm text-gray-600">Overview of 8x8 feature descriptors extracted from various image regions</p>
+            </div>
+            
+            <div className="text-center">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Main Image with Feature Points</h4>
+              <img 
+                src={descriptorExamplesMain} 
+                alt="Main Image with Feature Points" 
+                className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+              />
+              <p className="text-sm text-gray-600">Source image showing detected feature points and their locations</p>
+            </div>
+            
+            <div className="text-center">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Detailed Descriptor Examples</h4>
+              <img 
+                src={descriptorExamplesDetails} 
+                alt="Detailed Descriptor Examples" 
+                className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+              />
+              <p className="text-sm text-gray-600">Detailed view of individual 8x8 normalized feature descriptors</p>
+            </div>
+          </div>
+
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+            <p className="text-gray-700 text-left">
+              <strong>Deliverables:</strong> Extract normalized 8x8 feature descriptors. Show several extracted features.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Part B.3: Feature Matching */}
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Part B.3: Feature Matching</h2>
+            <div className="max-w-6xl mx-auto mb-8">
+              <p className="text-lg text-gray-700 text-left mb-6">
+                This section adds the step of robust feature matching using Lowe's ratio test to establish better and more 
+                reliable correspondences between image pairs. I also included geometric filtering to filter matches with large 
+                y-coordinate differences. I also included visualizations with numbered match lines for ease of analysis.
+              </p>
+
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">Implementation Details</h3>
+              <p className="text-lg text-gray-700 text-left mb-4">
+                For each descriptor in image 1, the algorithm finds the 1st and 2nd nearest neighbors in image 2 
+                using Euclidean distance. Matches are accepted when the ratio of 1st to 2nd nearest neighbor 
+                distance is below an adaptive threshold, ensuring that only distinctive features with clear 
+                correspondences are matched.
+              </p>
+
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">Adaptive Thresholding</h3>
+              <p className="text-lg text-gray-700 text-left mb-4">
+                The system implements intelligent outlier rejection by calculating average 2-NN distances in both 
+                directions and using 50% of the average outlier distance as the threshold. This adaptive approach 
+                automatically adjusts to different image characteristics, providing robust matching across various 
+                image types and conditions.
+              </p>
+          <div className="space-y-8 max-w-6xl mx-auto mb-8">
+            <div className="text-center">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Feature Matching Results 1</h4>
+              <img 
+                src={featureMatches1} 
+                alt="Feature Matches Visualization 1" 
+                className="w-full max-w-6xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+              />
+              <p className="text-sm text-gray-600">Feature matches between image pairs showing Lowe's ratio test results</p>
+            </div>
+            
+            <div className="text-center">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Feature Matching Results 2</h4>
+              <img 
+                src={featureMatches2} 
+                alt="Feature Matches Visualization 2" 
+                className="w-full max-w-6xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+              />
+              <p className="text-sm text-gray-600">Feature matches between image pairs showing Lowe's ratio test results</p>
+            </div>
+            
+            <div className="text-center">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Feature Matching Results 3</h4>
+              <img 
+                src={featureMatches3} 
+                alt="Feature Matches Visualization 3" 
+                className="w-full max-w-6xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+              />
+              <p className="text-sm text-gray-600">Feature matches between image pairs showing Lowe's ratio test results</p>
+            </div>
+          </div>
+
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+            <p className="text-gray-700 text-left">
+              <strong>Deliverables:</strong> Show matched features between image pairs.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Part B.4: RANSAC & Comparison */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Part B.4: RANSAC for Robust Homography</h2>
+        <div className="max-w-6xl mx-auto mb-8">
+          <p className="text-lg text-gray-700 text-left mb-6">
+            For the final step of this automatic matching process, I implemented 4-point RANSAC for robust 
+            homography estimation, providing a reliable method to eliminate outliers and compute accurate 
+            homography matrices even in the presence of incorrect feature matches. This approach significantly 
+            improves the quality and robustness of automatic image mosaicing.
+          </p>
+
+          <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">Implementation Details</h3>
+          <p className="text-lg text-gray-700 text-left mb-4">
+            The algorithm randomly selects 4 feature correspondences, computes a homography using the 
+            <code>computeH</code> function, and evaluates inliers based on reprojection error threshold 
+            (default 15.0 pixels). This iterative process ensures that only the most consistent feature 
+            matches contribute to the final homography estimation.
+          </p>
+
+          <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">RANSAC Process</h3>
+          <ol className="text-lg text-gray-700 mb-6 list-decimal list-inside space-y-2 text-left">
+            <li>Randomly sample 4 matches from the feature correspondences</li>
+            <li>Compute homography using least-squares on the 4 points</li>
+            <li>Count inliers by computing reprojection error for all matches</li>
+            <li>Track the best homography with the most inliers</li>
+            <li>Refine the final homography using all inliers</li>
+          </ol>
+
+          <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">Integration</h3>
+          <p className="text-lg text-gray-700 text-left mb-6">
+            The RANSAC implementation integrates with the existing code for homography computation 
+            (<code>homography.py</code>), image warping (<code>warping.py</code>), and mosaic stitching 
+            (<code>stitching.py</code>) files from Part A to create robust panoramic mosaics with improved 
+            accuracy and reliability.
+          </p>
+
+          <h3 className="text-xl font-semibold text-gray-900 mb-6 text-left">Manual vs Automatic Stitching Comparison</h3>
+          
+          {/* Heller Patio Comparison */}
+          <div className="mb-12">
+            <h4 className="text-lg font-semibold text-gray-900 mb-4 text-left">Heller Patio Sequence</h4>
+            <div className="space-y-4">
+              <div>
+                <h5 className="text-md font-medium text-gray-700 mb-2">Manual Stitching</h5>
+                <img 
+                  src={finalMosaic1} 
+                  alt="Manual Mosaic - Heller Patio" 
+                  className="w-full object-contain rounded-lg shadow-lg"
+                />
+              </div>
+              <div>
+                <h5 className="text-md font-medium text-gray-700 mb-2">Automatic Stitching</h5>
+                <img 
+                  src={automaticMosaicHeller} 
+                  alt="Automatic Mosaic - Heller Patio" 
+                  className="w-full object-contain rounded-lg shadow-lg"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Cathedral Comparison */}
+          <div className="mb-12">
+            <h4 className="text-lg font-semibold text-gray-900 mb-4 text-left">Cathedral Sequence</h4>
+            <div className="space-y-4">
+              <div>
+                <h5 className="text-md font-medium text-gray-700 mb-2">Manual Stitching</h5>
+                <img 
+                  src={finalMosaic2} 
+                  alt="Manual Mosaic - Cathedral" 
+                  className="w-full object-contain rounded-lg shadow-lg"
+                />
+              </div>
+              <div>
+                <h5 className="text-md font-medium text-gray-700 mb-2">Automatic Stitching</h5>
+                <img 
+                  src={automaticMosaicCathedral} 
+                  alt="Automatic Mosaic - Cathedral" 
+                  className="w-full object-contain rounded-lg shadow-lg"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Fountain vs Great Hall Comparison */}
+          <div className="mb-8">
+            <h4 className="text-lg font-semibold text-gray-900 mb-4 text-left">Fountain Sequence vs Great Hall Sequence</h4>
+            <div className="space-y-4">
+              <div>
+                <h5 className="text-md font-medium text-gray-700 mb-2">Manual Stitching (Fountain)</h5>
+                <img 
+                  src={finalMosaic3} 
+                  alt="Manual Mosaic - Fountain" 
+                  className="w-full object-contain rounded-lg shadow-lg"
+                />
+              </div>
+              <div>
+                <h5 className="text-md font-medium text-gray-700 mb-2">Automatic Stitching (Great Hall)</h5>
+                <img 
+                  src={automaticMosaicGreatHall} 
+                  alt="Automatic Mosaic - Great Hall" 
+                  className="w-full object-contain rounded-lg shadow-lg"
+                />
+                <p className="text-sm text-gray-600 mt-2">Note: Fountain automatic mosaic could not be generated due to poor image quality, so Great Hall automatic mosaic is shown instead</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+            <p className="text-gray-700 text-left">
+              <strong>Deliverables:</strong> Implement 4-point RANSAC from scratch. Show comparison of 
+              stitching manually and automatically. Create ≥3 automatic mosaics.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Part B.5: Bells & Whistles */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Part B.5: Bells & Whistles - Rotation-Invariant Descriptors</h2>
+        <div className="max-w-6xl mx-auto mb-8">
+          <div className="text-center mb-8">
+            <div className="w-full max-w-4xl mx-auto h-64 bg-gray-200 rounded-lg shadow-lg mb-2 flex items-center justify-center">
+              <span className="text-gray-500">Rotation-Invariant Descriptor Comparison</span>
+            </div>
+            <p className="text-sm text-gray-600">Comparison showing improved matching performance with rotation-invariant descriptors</p>
+          </div>
+
+          <div className="bg-green-50 border-l-4 border-green-400 p-6 mb-6">
+            <p className="text-lg text-gray-700 text-left mb-4">
+              <strong>Improvements:</strong> Rotation-invariant descriptors significantly improve matching accuracy 
+              when images are captured from different viewing angles or when the camera is rotated. This is 
+              particularly important for panoramic image stitching where the camera may be tilted or rotated 
+              between shots.
+            </p>
           </div>
         </div>
       </div>
