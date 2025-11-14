@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
-import proj0SelfieWrong from '../../../assets/cs280a/proj0_selfie_wrong_way.jpg';
-import proj0SelfieRight from '../../../assets/cs280a/proj0_selfie_right_way.jpg';
-import proj0StreetViewZoomed from '../../../assets/cs280a/proj0_street_view_1.jpg';
-import proj0StreetViewClose from '../../../assets/cs280a/proj0_street_view_2.jpg';
-import proj0DollyZoom from '../../../assets/cs280a/proj0_dolly_zoom_cropped.gif';
+import { 
+  proj0SelfieWrong, 
+  proj0SelfieRight, 
+  proj0StreetView1 as proj0StreetViewZoomed,
+  proj0StreetView2 as proj0StreetViewClose,
+  proj0DollyZoom 
+} from '../../../assets/cs280a/proj0';
 
 function Project0() {
   return (

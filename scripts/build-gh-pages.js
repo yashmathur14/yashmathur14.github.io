@@ -14,7 +14,8 @@ const routes = [
   '/cs280a/project0',
   '/cs280a/project1',
   '/cs280a/project2',
-  '/cs280a/project3'
+  '/cs280a/project3',
+  '/cs280a/project4'
 ];
 
 // Read the main index.html
