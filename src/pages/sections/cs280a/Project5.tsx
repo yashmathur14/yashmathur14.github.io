@@ -44,7 +44,35 @@ import {
   logo2,
   logo3,
   visualAnagramThreeAxes,
-  visualAnagramSkew
+  visualAnagramSkew,
+  partB1_1_unet,
+  partB1_1_standardOps,
+  partB1_2_noising,
+  partB1_2_multipleDigits,
+  partB1_2_1_trainingLoss,
+  partB1_2_1_multipleDigits,
+  partB1_2_2_digit0,
+  partB1_2_2_digit1,
+  partB1_2_2_digit2,
+  partB1_2_2_digit3,
+  partB1_2_2_digit4,
+  partB1_2_2_digit5,
+  partB1_2_2_digit6,
+  partB1_2_2_digit7,
+  partB1_2_2_digit8,
+  partB1_2_2_digit9,
+  partB1_2_3_trainingLoss,
+  partB1_2_3_sampleResults,
+  partB2_2_trainingLoss,
+  partB2_3_samplingResults,
+  partB2_5_trainingLoss,
+  partB2_6_ep1,
+  partB2_6_ep5,
+  partB2_6_ep10,
+  partB2_6_noSchedulerEp1,
+  partB2_6_noSchedulerEp5,
+  partB2_6_noSchedulerEp10,
+  partB3_bellsAndWhistles
 } from '../../../assets/cs280a/proj5'
 
 function Project5() {
@@ -58,13 +86,23 @@ function Project5() {
         <h2 className="text-2xl md:text-3xl text-gray-700 mb-6">
           Part A: Diffusion Models for Image Generation and Editing
         </h2>
+        <h2 className="text-2xl md:text-3xl text-gray-700 mb-6">
+          Part B: Flow Matching from Scratch
+        </h2>
         <p className="text-lg text-gray-600 mb-8">
           CS280A: Intro to Computer Vision and Computational Photography
         </p>
-        <div className="prose prose-lg max-w-none">
-          <a href="https://cal-cs180.github.io/fa25/hw/proj5/parta.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 text-lg hover:text-blue-800 underline">
-            Official CS280A Project 5 Part A page
-          </a>
+        <div className="prose prose-lg max-w-none space-y-2">
+          <div>
+            <a href="https://cal-cs180.github.io/fa25/hw/proj5/parta.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 text-lg hover:text-blue-800 underline">
+              Official CS280A Project 5 Part A page
+            </a>
+          </div>
+          <div>
+            <a href="https://cal-cs180.github.io/fa25/hw/proj5/partb.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 text-lg hover:text-blue-800 underline">
+              Official CS280A Project 5 Part B page
+            </a>
+          </div>
         </div>
       </div>
 
@@ -81,10 +119,15 @@ function Project5() {
             <li><strong>Part A0</strong> focuses on setup and exploring the pre-trained model with custom text prompts</li>
             <li><strong>Part A1</strong> implements sampling loops and extends them for various tasks like inpainting and optical illusions</li>
             <li><strong>Part A2</strong> includes bells and whistles for CS280A students</li>
+            <li><strong>Part B1</strong> trains a single-step denoising UNet on MNIST digits</li>
+            <li><strong>Part B2</strong> implements flow matching from scratch with time and class conditioning</li>
+            <li><strong>Part B3</strong> includes bells and whistles for CS280A students</li>
           </ul>
           <p className="text-lg text-gray-700 text-left">
             Diffusion models work by learning to reverse a forward process that gradually adds noise to images. Starting from 
-            pure noise, the model iteratively denoises to generate realistic images that match text prompts.
+            pure noise, the model iteratively denoises to generate realistic images that match text prompts. In Part B, we build 
+            and train our own UNet architecture from scratch to perform flow matching on MNIST digits, learning the fundamentals 
+            of generative model training.
           </p>
         </div>
       </div>
@@ -898,6 +941,687 @@ function Project5() {
                     className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
                   />
                   <p className="text-sm text-gray-600">Logo Design 3</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Part B: Flow Matching from Scratch */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Part B: Flow Matching from Scratch</h2>
+        <div className="max-w-6xl mx-auto mb-8">
+          <p className="text-lg text-gray-700 text-left mb-6">
+            In Part B, we train our own flow matching model on MNIST from scratch. We build and train a UNet architecture 
+            to perform denoising and flow matching, learning the fundamentals of generative model training. This part covers 
+            single-step denoising, time-conditioned flow matching, and class-conditioned generation.
+          </p>
+        </div>
+
+        {/* Part B1: Training a Single-Step Denoising UNet */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Part B1: Training a Single-Step Denoising UNet</h2>
+          <div className="max-w-6xl mx-auto mb-8">
+            <p className="text-lg text-left text-gray-700 mb-6">
+              We start by building a simple one-step denoiser. Given a noisy image <InlineMath math="z" />, we aim to train 
+              a denoiser <InlineMath math="D_\theta" /> such that it maps <InlineMath math="z" /> to a clean image <InlineMath math="x" />. 
+              We optimize over an L2 loss:
+            </p>
+            <div className="my-4 bg-gray-100 p-4 rounded-lg">
+              <BlockMath math="L = \mathbb{E}_{z,x} \|D_{\theta}(z) - x\|^2" />
+            </div>
+
+            {/* Part B1.1: Implementing the UNet */}
+            <div className="mb-12">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Part B1.1: Implementing the UNet</h3>
+              <div className="max-w-6xl mx-auto mb-8">
+                <p className="text-lg text-left text-gray-700 mb-6">
+                  In this project, we implement the denoiser as a UNet. It consists of downsampling and upsampling blocks 
+                  with skip connections. The UNet uses standard operations including Conv2d, BatchNorm2d, GELU activation, 
+                  ConvTranspose2d for upsampling, and AvgPool2d for downsampling.
+                </p>
+
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                  <p className="text-gray-700 text-left">
+                    <strong>[Impl]</strong> I implemented the UNet architecture with the following components:
+                  </p>
+                  <ul className="text-gray-700 text-left mt-2 list-disc list-inside space-y-1">
+                    <li><strong>Conv</strong>: Convolutional layer that doesn't change image resolution, only channel dimension</li>
+                    <li><strong>DownConv</strong>: Convolutional layer that downsamples the tensor by 2</li>
+                    <li><strong>UpConv</strong>: Convolutional layer that upsamples the tensor by 2</li>
+                    <li><strong>Flatten</strong>: Average pooling layer that flattens a 7×7 tensor into a 1×1 tensor</li>
+                    <li><strong>Unflatten</strong>: Convolutional layer that unflattens/upsamples a 1×1 tensor into a 7×7 tensor</li>
+                    <li><strong>Concat</strong>: Channel-wise concatenation between tensors with the same 2D shape</li>
+                  </ul>
+                </div>
+
+                {/* UNet Architecture Visualizations */}
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 text-left">Unconditional UNet Architecture</h4>
+                  <div className="space-y-6">
+                    <div className="text-center">
+                      <img 
+                        src={partB1_1_unet} 
+                        alt="UNet architecture diagram" 
+                        className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                      />
+                      <p className="text-sm text-gray-600">UnconditionalUNet Architecture</p>
+                    </div>
+                    <div className="text-center">
+                      <img 
+                        src={partB1_1_standardOps} 
+                        alt="Standard UNet operations" 
+                        className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                      />
+                      <p className="text-sm text-gray-600">Standard UNet Operations</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Part B1.2: Using the UNet to Train a Denoiser */}
+            <div className="mb-12">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Part B1.2: Using the UNet to Train a Denoiser</h3>
+              <div className="max-w-6xl mx-auto mb-8">
+                <p className="text-lg text-left text-gray-700 mb-6">
+                  To train our denoiser, we need to generate training data pairs of (<InlineMath math="z" />, <InlineMath math="x" />), 
+                  where each <InlineMath math="x" /> is a clean MNIST digit. For each training batch, we generate <InlineMath math="z" /> 
+                  from <InlineMath math="x" /> using the following noising process:
+                </p>
+                <div className="my-4 bg-gray-100 p-4 rounded-lg">
+                  <BlockMath math="z = x + \sigma \epsilon, \quad \text{where } \epsilon \sim \mathcal{N}(0, I)" />
+                </div>
+                <p className="text-lg text-left text-gray-700 mb-6">
+                  We visualize the different noising processes over <InlineMath math="\sigma = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" />, 
+                  assuming normalized <InlineMath math="x \in [0, 1]" />. You should see noisier images as <InlineMath math="\sigma" /> increases.
+                </p>
+
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                  <p className="text-gray-700 text-left">
+                    <strong>Deliverables:</strong>
+                  </p>
+                  <ul className="text-gray-700 text-left mt-2 list-disc list-inside space-y-1">
+                    <li>A visualization of the noising process using <InlineMath math="\sigma = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" /></li>
+                  </ul>
+                </div>
+
+                {/* Noising Process Visualization */}
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 text-left">Noising Process Visualization</h4>
+                  <div className="space-y-6">
+                    <div className="text-center">
+                      <img 
+                        src={partB1_2_noising} 
+                        alt="Noising process visualization with σ = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" 
+                        className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                      />
+                      <p className="text-sm text-gray-600">Noising process with σ = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]</p>
+                    </div>
+                    <div className="text-center">
+                      <img 
+                        src={partB1_2_multipleDigits} 
+                        alt="Noising process visualization for multiple digits" 
+                        className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                      />
+                      <p className="text-sm text-gray-600">Noising process for multiple digits</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Part B1.2.1: Training */}
+                <div className="mb-10">
+                  <h4 className="text-xl font-semibold text-gray-900 mb-4 text-left">Part B1.2.1: Training</h4>
+                  <p className="text-lg text-left text-gray-700 mb-4">
+                    We train the model to perform denoising on noisy images <InlineMath math="z" /> with <InlineMath math="\sigma = 0.5" /> 
+                    applied to clean images <InlineMath math="x" />. We use the MNIST dataset, train for 5 epochs with batch size 256, 
+                    and use the Adam optimizer with learning rate 1e-4.
+                  </p>
+
+                  <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <p className="text-gray-700 text-left">
+                      <strong>Deliverables:</strong>
+                    </p>
+                    <ul className="text-gray-700 text-left mt-2 list-disc list-inside space-y-1">
+                      <li>A training loss curve plot every few iterations during the whole training process of <InlineMath math="\sigma = 0.5" /></li>
+                      <li>Sample results on the test set with noise level 0.5 after the first and the 5-th epoch</li>
+                    </ul>
+                  </div>
+
+                  {/* Training Loss Curve */}
+                  <div className="mb-8">
+                    <h5 className="text-lg font-semibold text-gray-900 mb-4 text-left">Training Loss Curve</h5>
+                    <div className="text-center">
+                      <img 
+                        src={partB1_2_1_trainingLoss} 
+                        alt="Training loss curve for σ = 0.5 denoising" 
+                        className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                      />
+                      <p className="text-sm text-gray-600">Training loss curve for σ = 0.5 denoising</p>
+                    </div>
+                  </div>
+
+                  {/* Sample Results */}
+                  <div className="mb-8">
+                    <h5 className="text-lg font-semibold text-gray-900 mb-4 text-left">Sample Results on Test Set</h5>
+                    <div className="text-center">
+                      <img 
+                        src={partB1_2_1_multipleDigits} 
+                        alt="Sample denoised results for multiple digits after epoch 1 and epoch 5" 
+                        className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                      />
+                      <p className="text-sm text-gray-600">Sample results on test set with noise level 0.5 after epoch 1 and epoch 5</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Part B1.2.2: Out-of-Distribution Testing */}
+                <div className="mb-10">
+                  <h4 className="text-xl font-semibold text-gray-900 mb-4 text-left">Part B1.2.2: Out-of-Distribution Testing</h4>
+                  <p className="text-lg text-left text-gray-700 mb-4">
+                    Our denoiser was trained on MNIST digits noised with <InlineMath math="\sigma = 0.5" />. Let's see how the 
+                    denoiser performs on different <InlineMath math="\sigma" />'s that it wasn't trained for.
+                  </p>
+
+                  <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <p className="text-gray-700 text-left">
+                      <strong>Deliverables:</strong>
+                    </p>
+                    <ul className="text-gray-700 text-left mt-2 list-disc list-inside space-y-1">
+                      <li>Sample results on the test set with out-of-distribution noise levels after the model is trained. Keep the same image and vary <InlineMath math="\sigma = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" /></li>
+                    </ul>
+                  </div>
+
+                  {/* OOD Results */}
+                  <div className="mb-8">
+                    <h5 className="text-lg font-semibold text-gray-900 mb-4 text-left">Out-of-Distribution Results</h5>
+                    <div className="space-y-6">
+                      <div className="text-center">
+                        <h6 className="text-md font-semibold text-gray-900 mb-2">Digit 0</h6>
+                        <img 
+                          src={partB1_2_2_digit0} 
+                          alt="Denoising results for digit 0 with varying noise levels σ = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <h6 className="text-md font-semibold text-gray-900 mb-2">Digit 1</h6>
+                        <img 
+                          src={partB1_2_2_digit1} 
+                          alt="Denoising results for digit 1 with varying noise levels σ = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <h6 className="text-md font-semibold text-gray-900 mb-2">Digit 2</h6>
+                        <img 
+                          src={partB1_2_2_digit2} 
+                          alt="Denoising results for digit 2 with varying noise levels σ = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <h6 className="text-md font-semibold text-gray-900 mb-2">Digit 3</h6>
+                        <img 
+                          src={partB1_2_2_digit3} 
+                          alt="Denoising results for digit 3 with varying noise levels σ = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <h6 className="text-md font-semibold text-gray-900 mb-2">Digit 4</h6>
+                        <img 
+                          src={partB1_2_2_digit4} 
+                          alt="Denoising results for digit 4 with varying noise levels σ = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <h6 className="text-md font-semibold text-gray-900 mb-2">Digit 5</h6>
+                        <img 
+                          src={partB1_2_2_digit5} 
+                          alt="Denoising results for digit 5 with varying noise levels σ = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <h6 className="text-md font-semibold text-gray-900 mb-2">Digit 6</h6>
+                        <img 
+                          src={partB1_2_2_digit6} 
+                          alt="Denoising results for digit 6 with varying noise levels σ = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <h6 className="text-md font-semibold text-gray-900 mb-2">Digit 7</h6>
+                        <img 
+                          src={partB1_2_2_digit7} 
+                          alt="Denoising results for digit 7 with varying noise levels σ = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <h6 className="text-md font-semibold text-gray-900 mb-2">Digit 8</h6>
+                        <img 
+                          src={partB1_2_2_digit8} 
+                          alt="Denoising results for digit 8 with varying noise levels σ = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <h6 className="text-md font-semibold text-gray-900 mb-2">Digit 9</h6>
+                        <img 
+                          src={partB1_2_2_digit9} 
+                          alt="Denoising results for digit 9 with varying noise levels σ = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 text-center mt-4">Denoising results with varying noise levels σ = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0] for each digit</p>
+                  </div>
+                </div>
+
+                {/* Part B1.2.3: Denoising Pure Noise */}
+                <div className="mb-10">
+                  <h4 className="text-xl font-semibold text-gray-900 mb-4 text-left">Part B1.2.3: Denoising Pure Noise</h4>
+                  <p className="text-lg text-left text-gray-700 mb-4">
+                    To make denoising a generative task, we'd like to be able to denoise pure, random Gaussian noise. We can 
+                    think of this as starting with a blank canvas <InlineMath math="z = \epsilon" /> where <InlineMath math="\epsilon \sim \mathcal{N}(0, I)" /> 
+                    and denoising it to get a clean image <InlineMath math="x" />.
+                  </p>
+                  <p className="text-lg text-left text-gray-700 mb-4">
+                    We repeat the same training process as in part B1.2.1, but input pure noise <InlineMath math="\epsilon \sim \mathcal{N}(0, I)" /> 
+                    and denoise it for 5 epochs.
+                  </p>
+
+                  <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <p className="text-gray-700 text-left">
+                      <strong>Deliverables:</strong>
+                    </p>
+                    <ul className="text-gray-700 text-left mt-2 list-disc list-inside space-y-1">
+                      <li>A training loss curve plot every few iterations during the whole training process that denoises pure noise</li>
+                      <li>Sample results on pure noise after the first and the 5-th epoch</li>
+                      <li>A brief description of the patterns observed in the generated outputs and explanations for why they may exist</li>
+                    </ul>
+                  </div>
+
+                  {/* Pure Noise Training Loss */}
+                  <div className="mb-8">
+                    <h5 className="text-lg font-semibold text-gray-900 mb-4 text-left">Training Loss Curve (Pure Noise)</h5>
+                    <div className="text-center">
+                      <img 
+                        src={partB1_2_3_trainingLoss} 
+                        alt="Training loss curve for pure noise denoising" 
+                        className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                      />
+                      <p className="text-sm text-gray-600">Training loss curve for pure noise denoising</p>
+                    </div>
+                  </div>
+
+                  {/* Pure Noise Results */}
+                  <div className="mb-8">
+                    <h5 className="text-lg font-semibold text-gray-900 mb-4 text-left">Sample Results on Pure Noise</h5>
+                    <div className="text-center">
+                      <img 
+                        src={partB1_2_3_sampleResults} 
+                        alt="Sample results from pure noise after epoch 1 and epoch 5" 
+                        className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                      />
+                      <p className="text-sm text-gray-600">Sample results on pure noise after epoch 1 and epoch 5</p>
+                    </div>
+                  </div>
+
+                  {/* Pattern Analysis */}
+                  <div className="mb-8">
+                    <h5 className="text-lg font-semibold text-gray-900 mb-4 text-left">Pattern Analysis</h5>
+                    <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
+                      <div className="text-gray-700 text-left space-y-3">
+                        <p>
+                          <strong>Loss Curve Analysis:</strong> The loss curve for pure noise denoising shows rapid initial convergence and then stabilizes around an MSE loss of 0.06 to 0.07. This indicates the model successfully learned a consistent function.
+                        </p>
+                        <p>
+                          <strong>Epoch Comparison:</strong> Comparing Epoch 1 (E1) vs. Epoch 5 (E5): The images become noticeably sharper and more defined by Epoch 5, suggesting the model is settling on a robust output.
+                        </p>
+                        <p>
+                          <strong>Generated Pattern:</strong> The outputs do not resemble any specific digit (0-9). Instead, they are all nearly identical, centered, blurry grey blobs that look like the average of all MNIST digits.
+                        </p>
+                        <p>
+                          <strong>Explanation:</strong> This confirms the model has learned to predict the unconditional expected value of the clean data, which is the centroid of the data distribution, as the optimal solution for minimizing the MSE loss when the input noise is independent of the target image.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Part B2: Flow Matching from Scratch */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Part B2: Flow Matching from Scratch</h2>
+          <div className="max-w-6xl mx-auto mb-8">
+            <p className="text-lg text-left text-gray-700 mb-6">
+              In this part, we extend our UNet to perform flow matching. We add time conditioning to the UNet so it can predict 
+              flows at different timesteps, enabling iterative denoising from pure noise to clean images. We then add class 
+              conditioning to enable controlled generation of specific digits.
+            </p>
+
+            {/* Part B2.1: Adding Time Conditioning to UNet */}
+            <div className="mb-12">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Part B2.1: Adding Time Conditioning to UNet</h3>
+              <div className="max-w-6xl mx-auto mb-8">
+                <p className="text-lg text-left text-gray-700 mb-6">
+                  We need a way to inject scalar <InlineMath math="t" /> into our UNet model to condition it. We use FCBlock 
+                  (fully-connected block) to inject the conditioning signal into the UNet. The conditioning signal <InlineMath math="t" /> 
+                  is normalized to be in the range [0, 1] and embedded through FCBlocks.
+                </p>
+
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                  <p className="text-gray-700 text-left">
+                    <strong>[Impl]</strong> I implemented time conditioning by:
+                  </p>
+                  <ul className="text-gray-700 text-left mt-2 list-disc list-inside space-y-1">
+                    <li>Adding FCBlock components to embed the time signal <InlineMath math="t" /></li>
+                    <li>Modulating the unflatten and up1 layers with the embedded time signals</li>
+                    <li>Normalizing <InlineMath math="t" /> to the range [0, 1] before embedding</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Part B2.2: Training the UNet */}
+            <div className="mb-12">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Part B2.2: Training the UNet</h3>
+              <div className="max-w-6xl mx-auto mb-8">
+                <p className="text-lg text-left text-gray-700 mb-6">
+                  Training our time-conditioned UNet <InlineMath math="u_\theta(x_t, t)" /> involves picking a random image 
+                  <InlineMath math="x_1" /> from the training set, a random timestep <InlineMath math="t" />, adding noise to 
+                  <InlineMath math="x_1" /> to get <InlineMath math="x_t" />, and training the model to predict the flow at 
+                  <InlineMath math="x_t" />. We use batch size 64, hidden dimension D = 64, Adam optimizer with initial learning 
+                  rate 1e-2, and an exponential learning rate decay scheduler.
+                </p>
+
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                  <p className="text-gray-700 text-left">
+                    <strong>Deliverables:</strong>
+                  </p>
+                  <ul className="text-gray-700 text-left mt-2 list-disc list-inside space-y-1">
+                    <li>A training loss curve plot for the time-conditioned UNet over the whole training process</li>
+                  </ul>
+                </div>
+
+                {/* Training Loss Curve */}
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 text-left">Training Loss Curve</h4>
+                  <div className="text-center">
+                    <img 
+                      src={partB2_2_trainingLoss} 
+                      alt="Training loss curve for time-conditioned UNet" 
+                      className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                    />
+                    <p className="text-sm text-gray-600">Training loss curve for time-conditioned UNet</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Part B2.3: Sampling from the UNet */}
+            <div className="mb-12">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Part B2.3: Sampling from the UNet</h3>
+              <div className="max-w-6xl mx-auto mb-8">
+                <p className="text-lg text-left text-gray-700 mb-6">
+                  We can now use our UNet for iterative denoising. Starting from pure noise, we iteratively apply the flow prediction 
+                  to denoise the image step by step. The results should not be perfect, but legible digits should emerge.
+                </p>
+
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                  <p className="text-gray-700 text-left">
+                    <strong>Deliverables:</strong>
+                  </p>
+                  <ul className="text-gray-700 text-left mt-2 list-disc list-inside space-y-1">
+                    <li>Sampling results from the time-conditioned UNet for 1, 5, and 10 epochs. The results should not be perfect, but reasonably good.</li>
+                  </ul>
+                </div>
+
+                {/* Sampling Results */}
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 text-left">Sampling Results</h4>
+                  <div className="text-center">
+                    <img 
+                      src={partB2_3_samplingResults} 
+                      alt="Sampling results from time-conditioned UNet after epochs 1, 5, and 10" 
+                      className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                    />
+                    <p className="text-sm text-gray-600">Sampling results from time-conditioned UNet after epochs 1, 5, and 10</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Part B2.4: Adding Class-Conditioning to UNet */}
+            <div className="mb-12">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Part B2.4: Adding Class-Conditioning to UNet</h3>
+              <div className="max-w-6xl mx-auto mb-8">
+                <p className="text-lg text-left text-gray-700 mb-6">
+                  To make the results better and give us more control for image generation, we can also condition our UNet on the 
+                  class of the digit 0-9. We implement class-conditioning by adding 2 more FCBlocks to our UNet. For class-conditioning 
+                  vector <InlineMath math="c" />, we make it a one-hot vector. Because we still want our UNet to work without being 
+                  conditioned on the class (recall classifier-free guidance), we implement dropout where 10% of the time 
+                  (<InlineMath math="p_{\text{uncond}} = 0.1" />) we drop the class conditioning vector <InlineMath math="c" /> by 
+                  setting it to 0.
+                </p>
+
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                  <p className="text-gray-700 text-left">
+                    <strong>[Impl]</strong> I implemented class conditioning by:
+                  </p>
+                  <ul className="text-gray-700 text-left mt-2 list-disc list-inside space-y-1">
+                    <li>Adding FCBlock components for class embedding</li>
+                    <li>Using one-hot vectors for class representation</li>
+                    <li>Implementing dropout with <InlineMath math="p_{\text{uncond}} = 0.1" /> for unconditional generation</li>
+                    <li>Modulating unflatten and up1 layers with combined time and class signals</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Part B2.5: Training the UNet */}
+            <div className="mb-12">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Part B2.5: Training the UNet</h3>
+              <div className="max-w-6xl mx-auto mb-8">
+                <p className="text-lg text-left text-gray-700 mb-6">
+                  Training for this section is the same as time-only conditioning, with the only difference being the conditioning 
+                  vector <InlineMath math="c" /> and doing unconditional generation periodically. We train for 10 epochs.
+                </p>
+
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                  <p className="text-gray-700 text-left">
+                    <strong>Deliverables:</strong>
+                  </p>
+                  <ul className="text-gray-700 text-left mt-2 list-disc list-inside space-y-1">
+                    <li>A training loss curve plot for the class-conditioned UNet over the whole training process</li>
+                  </ul>
+                </div>
+
+                {/* Training Loss Curve */}
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 text-left">Training Loss Curve</h4>
+                  <div className="text-center">
+                    <img 
+                      src={partB2_5_trainingLoss} 
+                      alt="Training loss curve for class-conditioned UNet" 
+                      className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                    />
+                    <p className="text-sm text-gray-600">Training loss curve for class-conditioned UNet</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Part B2.6: Sampling from the UNet */}
+            <div className="mb-12">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Part B2.6: Sampling from the UNet</h3>
+              <div className="max-w-6xl mx-auto mb-8">
+                <p className="text-lg text-left text-gray-700 mb-6">
+                  Now we sample with class-conditioning and use classifier-free guidance with <InlineMath math="\gamma = 5.0" />. 
+                  Class-conditioning lets us converge faster, hence why we only train for 10 epochs.
+                </p>
+
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                  <p className="text-gray-700 text-left">
+                    <strong>Deliverables:</strong>
+                  </p>
+                  <ul className="text-gray-700 text-left mt-2 list-disc list-inside space-y-1">
+                    <li>Sampling results from the class-conditioned UNet for 1, 5, and 10 epochs. Generate 4 instances of each digit as shown in the spec.</li>
+                    <li>Can we get rid of the annoying learning rate scheduler? Simplicity is the best. Please try to maintain the same performance after removing the exponential learning rate scheduler. Show your visualization after training without the scheduler and provide a description of what you did to compensate for the loss of the scheduler.</li>
+                  </ul>
+                </div>
+
+                {/* Sampling Results */}
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 text-left">Sampling Results</h4>
+                  <div className="space-y-6">
+                    <div>
+                      <h5 className="text-md font-semibold text-gray-900 mb-2 text-left">After Epoch 1</h5>
+                      <div className="text-center">
+                        <img 
+                          src={partB2_6_ep1} 
+                          alt="Sampling results after epoch 1 - 4 instances of each digit 0-9" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                        <p className="text-sm text-gray-600">Sampling results after epoch 1 - 4 instances of each digit 0-9</p>
+                      </div>
+                    </div>
+                    <div>
+                      <h5 className="text-md font-semibold text-gray-900 mb-2 text-left">After Epoch 5</h5>
+                      <div className="text-center">
+                        <img 
+                          src={partB2_6_ep5} 
+                          alt="Sampling results after epoch 5 - 4 instances of each digit 0-9" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                        <p className="text-sm text-gray-600">Sampling results after epoch 5 - 4 instances of each digit 0-9</p>
+                      </div>
+                    </div>
+                    <div>
+                      <h5 className="text-md font-semibold text-gray-900 mb-2 text-left">After Epoch 10</h5>
+                      <div className="text-center">
+                        <img 
+                          src={partB2_6_ep10} 
+                          alt="Sampling results after epoch 10 - 4 instances of each digit 0-9" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                        <p className="text-sm text-gray-600">Sampling results after epoch 10 - 4 instances of each digit 0-9</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Learning Rate Scheduler Removal */}
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 text-left">Learning Rate Scheduler Removal</h4>
+                  <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                    <div className="text-gray-700 text-left space-y-3">
+                      <p>
+                        <strong>Solution:</strong> Making the model wider (num_hiddens=128) is the much better bet.
+                      </p>
+                      <p>
+                        <strong>Capacity vs. Convergence:</strong> The baseline model (hidden dim 64) is quite small. It likely underfits the data, meaning it physically lacks the neurons to represent the complex patterns of all 10 digits purely from time conditioning. Training an underpowered model for longer (30 epochs) usually yields diminishing returns—it hits a "performance ceiling" early.
+                      </p>
+                      <p>
+                        <strong>Immediate Impact:</strong> Doubling the width (64 → 128) quadruples the capacity in many layers (since parameters scale quadratically in linear layers). This allows the model to capture much finer details and cleaner strokes within the same number of epochs.
+                      </p>
+                      <p>
+                        <strong>Efficiency:</strong> A wider model might take slightly longer per epoch (maybe ~3.5 mins instead of 3), but 15 epochs of a wide model will almost certainly look better than 30 epochs of a narrow one.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-6">
+                    <div>
+                      <h5 className="text-md font-semibold text-gray-900 mb-2 text-left">After Epoch 1 (No Scheduler)</h5>
+                      <div className="text-center">
+                        <img 
+                          src={partB2_6_noSchedulerEp1} 
+                          alt="Sampling results after epoch 1 without scheduler" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                        <p className="text-sm text-gray-600">Sampling results after epoch 1 without scheduler</p>
+                      </div>
+                    </div>
+                    <div>
+                      <h5 className="text-md font-semibold text-gray-900 mb-2 text-left">After Epoch 5 (No Scheduler)</h5>
+                      <div className="text-center">
+                        <img 
+                          src={partB2_6_noSchedulerEp5} 
+                          alt="Sampling results after epoch 5 without scheduler" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                        <p className="text-sm text-gray-600">Sampling results after epoch 5 without scheduler</p>
+                      </div>
+                    </div>
+                    <div>
+                      <h5 className="text-md font-semibold text-gray-900 mb-2 text-left">After Epoch 10 (No Scheduler)</h5>
+                      <div className="text-center">
+                        <img 
+                          src={partB2_6_noSchedulerEp10} 
+                          alt="Sampling results after epoch 10 without scheduler" 
+                          className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                        />
+                        <p className="text-sm text-gray-600">Sampling results after epoch 10 without scheduler</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Part B3: Bells & Whistles */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Part B3: Bells & Whistles</h2>
+          <div className="max-w-6xl mx-auto mb-8">
+            <p className="text-lg text-gray-700 text-left mb-6">
+              <strong>Required for CS280A students:</strong>
+            </p>
+            <ul className="text-lg text-gray-700 text-left mb-6 list-disc list-inside space-y-2">
+              <li><strong>A better time-conditioned only UNet:</strong> Our time-conditioning only UNet in part B2.3 is actually far from perfect. 
+              Its result is way worse than the UNet conditioned by both time and class. We can definitively make it better! Show a better 
+              visualization image for the time-conditioning only network. Possible approaches include extending the training schedule or 
+              making the architecture more expressive.</li>
+            </ul>
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+              <p className="text-gray-700 text-left">
+                <strong>Deliverables:</strong> Show results for bells and whistles implementations.
+              </p>
+            </div>
+
+            {/* Bells & Whistles Results */}
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 text-left">Better Time-Conditioned Only UNet</h3>
+              <div className="mb-8">
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                  <p className="text-gray-700 text-left">
+                    To improve the time-conditioned only UNet, I increased the model width from 64 to 128 hidden dimensions. The baseline model 
+                    with 64 hidden dimensions is quite small and likely underfits the data—it physically lacks the neurons to represent the complex 
+                    patterns of all 10 digits purely from time conditioning. Training this underpowered model for longer (e.g., 30 epochs) usually 
+                    yields diminishing returns as it hits a "performance ceiling" early. In contrast, doubling the width to 128 quadruples the 
+                    capacity in many layers since parameters scale quadratically in linear layers, allowing the model to capture much finer details 
+                    and cleaner strokes within the same number of epochs. While a wider model might take slightly longer per epoch (approximately 
+                    3.5 minutes instead of 3), 15 epochs of the wider model produces significantly better results than 30 epochs of the narrow baseline, 
+                    making the architectural upgrade more effective than simply extending the training schedule.
+                  </p>
+                </div>
+
+                <div className="text-center">
+                  <img 
+                    src={partB3_bellsAndWhistles} 
+                    alt="Better time-conditioned UNet results with wider architecture" 
+                    className="w-full max-w-5xl mx-auto object-contain rounded-lg shadow-lg mb-2"
+                  />
+                  <p className="text-sm text-gray-600">Improved time-conditioned UNet results with wider architecture (num_hiddens=128)</p>
                 </div>
               </div>
             </div>
